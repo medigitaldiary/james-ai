@@ -20,21 +20,6 @@ function formatDate(val: string): string {
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const s = status.toUpperCase().replace(/_/g, ' ')
-  const styles: Record<string, string> = {
-    'AVAILABLE':      'bg-emerald-50 text-emerald-700 border-emerald-200',
-    'PARTIALLY SOLD': 'bg-amber-50 text-amber-700 border-amber-200',
-    'SOLD OUT':       'bg-red-50 text-red-600 border-red-200',
-  }
-  const cls = styles[s] ?? 'bg-gray-50 text-gray-600 border-gray-200'
-  return (
-    <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap ${cls}`}>
-      {s}
-    </span>
-  )
-}
-
 export function BondsTable({ bonds }: Props) {
   if (!bonds || bonds.length === 0) return null
 
