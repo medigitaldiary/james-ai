@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ':*)",
+      "Bash(curl -s -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -d '{\"messages\":[{\"role\":\"user\",\"content\":\"What yield can I expect from NCDs?\"}],\"kb_file_ids\":[],\"page_url\":\"\"}')",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -d '{\"messages\":[{\"role\":\"user\",\"content\":\"I want to buy bonds\"}],\"kb_file_ids\":[],\"page_url\":\"\"}')",
+      "Bash(curl -s https://keystone.sustvest.in/api/bonds/live)",
+      "Bash(curl -s \"https://keystone.sustvest.in/api/bonds/live\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(curl -s -X POST http://localhost:8000/feedback -H 'Content-Type: application/json' -d '{\"message_id\":\"test-msg-001\",\"rating\":\"up\",\"user_query\":\"I want to buy bonds\",\"message_content\":\"Great question! Here is how to buy bonds...\"}')",
+      "Bash(curl -s http://localhost:8000/feedback/summary)",
+      "Bash(curl -s http://localhost:8000/health)",
+      "Bash(curl -s -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -d '{\"messages\":[{\"role\":\"user\",\"content\":\"What is a bond?\"}],\"kb_file_ids\":[],\"page_url\":\"\"}')"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+<svg width="160" height="38" viewBox="0 0 160 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer arc: ~280deg, opens at bottom-right, with rounded cap creating a tail -->
+  <path d="M19 3 A16 16 0 1 0 33 26.5" stroke="#2B3BAF" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+  <!-- Inner arc: concentric, slightly smaller gap -->
+  <path d="M19 8.5 A10.5 10.5 0 1 0 28 25" stroke="#2B3BAF" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+  <!-- Center filled circle -->
+  <circle cx="19" cy="19" r="5.5" fill="#2B3BAF"/>
+  <!-- 4-pointed compass star (white) -->
+  <path d="M19 14 L20.1 17.9 L24 19 L20.1 20.1 L19 24 L17.9 20.1 L14 19 L17.9 17.9 Z" fill="white"/>
+
+  <!-- Wordmark -->
+  <text x="44" y="24.5" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="14.5" font-weight="600" fill="#111827" letter-spacing="-0.4">BondScanner</text>
+</svg>
