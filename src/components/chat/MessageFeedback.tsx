@@ -69,8 +69,8 @@ export function MessageFeedback({ messageId, messageContent, userQuery }: Props)
         title="Helpful"
         className={`p-1.5 rounded-lg transition-all ${
           rating === 'up'
-            ? 'text-green-600 bg-green-50'
-            : 'text-james-muted hover:text-green-600 hover:bg-green-50'
+            ? 'text-green-300 bg-white/20'
+            : 'text-white/50 hover:text-green-300 hover:bg-white/20'
         }`}
       >
         <ThumbsUp size={13} />
@@ -83,15 +83,15 @@ export function MessageFeedback({ messageId, messageContent, userQuery }: Props)
         title="Not helpful"
         className={`p-1.5 rounded-lg transition-all ${
           rating === 'down'
-            ? 'text-red-500 bg-red-50'
-            : 'text-james-muted hover:text-red-500 hover:bg-red-50'
+            ? 'text-red-300 bg-white/20'
+            : 'text-white/50 hover:text-red-300 hover:bg-white/20'
         }`}
       >
         <ThumbsDown size={13} />
       </button>
 
       {/* Divider */}
-      <div className="w-px h-3 bg-james-border mx-0.5" />
+      <div className="w-px h-3 bg-white/20 mx-0.5" />
 
       {/* Copy / Share */}
       <button
@@ -99,8 +99,8 @@ export function MessageFeedback({ messageId, messageContent, userQuery }: Props)
         title={copied ? 'Copied!' : 'Copy response'}
         className={`p-1.5 rounded-lg transition-all flex items-center gap-1 ${
           copied
-            ? 'text-james-primary bg-james-primary/10'
-            : 'text-james-muted hover:text-james-primary hover:bg-james-primary/10'
+            ? 'text-white bg-white/20'
+            : 'text-white/50 hover:text-white hover:bg-white/20'
         }`}
       >
         {copied ? <Check size={13} /> : <Copy size={13} />}

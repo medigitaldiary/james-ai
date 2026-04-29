@@ -13,7 +13,7 @@ export function MessageList() {
   }, [messages, isLoading])
 
   return (
-    <div className="flex-1 overflow-y-auto py-6 bg-james-bg">
+    <div className="flex-1 overflow-y-auto py-6 bg-transparent">
       <div className="max-w-2xl mx-auto px-4 space-y-5">
         {messages.map((msg, idx) => {
           // For James messages, find the most recent user message before it

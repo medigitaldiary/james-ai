@@ -34,7 +34,7 @@ export function InputBar() {
   const isWelcome = messages.length === 0
 
   return (
-    <div className={`w-full ${isWelcome ? 'px-4' : 'border-t border-james-border bg-white px-4 py-3'}`}>
+    <div className={`w-full ${isWelcome ? 'px-4' : 'bg-white/10 backdrop-blur-md px-4 py-3'}`}>
       <div className="max-w-2xl mx-auto">
         {/* Input box */}
         <div className="flex items-center gap-2 px-4 py-3 bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl shadow-sm focus-within:border-white/60 focus-within:shadow-md transition-all">
