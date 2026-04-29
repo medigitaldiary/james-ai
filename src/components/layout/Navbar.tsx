@@ -7,7 +7,7 @@ export function Navbar() {
   const hasConversation = messages.length > 0
 
   return (
-    <nav className="w-full bg-white/10 backdrop-blur-md px-6 py-3 flex items-center justify-between shrink-0">
+    <nav className="w-full px-6 py-3 flex items-center justify-between shrink-0">
       {/* Logo */}
       <a href="https://bondscanner.com">
         <img src="/bondscanner-logo.png" alt="BondScanner" className="h-8" />
