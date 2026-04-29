@@ -1,6 +1,6 @@
 export function WelcomeBanner() {
   return (
-    <div className="flex flex-col items-center pt-16 pb-8 px-4 text-center">
+    <div className="flex flex-col items-center pt-18 pb-20 px-4 text-center">
       {/* JAMES AI badge */}
       <div className="mb-6">
         <img src="/james-icon.png?v=2" alt="James AI" className="h-12" />
