@@ -10,7 +10,7 @@ export function ChatArea() {
   const isWelcome = messages.length === 0
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 bg-james-bg">
+    <div className="flex flex-col flex-1 min-h-0 bg-transparent">
       <FrustrationPrompt />
 
       {/* Message area */}

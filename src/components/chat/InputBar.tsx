@@ -37,7 +37,7 @@ export function InputBar() {
     <div className={`w-full ${isWelcome ? 'px-4' : 'border-t border-james-border bg-white px-4 py-3'}`}>
       <div className="max-w-2xl mx-auto">
         {/* Input box */}
-        <div className="flex items-end gap-2 px-4 py-3 bg-white border border-james-border rounded-2xl shadow-sm focus-within:border-james-primary/40 focus-within:shadow-md transition-all">
+        <div className="flex items-center gap-2 px-4 py-3 bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl shadow-sm focus-within:border-white/60 focus-within:shadow-md transition-all">
           <textarea
             ref={textareaRef}
             value={text}
@@ -45,7 +45,7 @@ export function InputBar() {
             onKeyDown={handleKeyDown}
             placeholder="Ask James about bonds or BondScanner..."
             rows={1}
-            className="flex-1 bg-transparent text-james-text placeholder:text-james-muted text-sm resize-none outline-none leading-relaxed min-h-[24px]"
+            className="flex-1 bg-transparent text-white placeholder:text-white/60 text-sm resize-none outline-none leading-relaxed min-h-[24px]"
             style={{ maxHeight: 120 }}
             disabled={isLoading}
           />
@@ -59,7 +59,7 @@ export function InputBar() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-james-muted mt-3">
+        <p className="text-center text-xs text-white/70 mt-3">
           By messaging James AI, you agree to our{' '}
           <a href="https://bondscanner.com" className="underline underline-offset-2 hover:text-james-text">
             Terms & Conditions

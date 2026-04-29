@@ -20,6 +20,16 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
+      keyframes: {
+        'cell-ripple': {
+          '0%':   { backgroundColor: 'rgba(255,255,255,0.05)', transform: 'scale(1)' },
+          '50%':  { backgroundColor: 'rgba(255,255,255,0.35)', transform: 'scale(1.05)' },
+          '100%': { backgroundColor: 'rgba(255,255,255,0.05)', transform: 'scale(1)' },
+        },
+      },
+      animation: {
+        'cell-ripple': 'cell-ripple var(--duration, 400ms) var(--delay, 0ms) ease-in-out both',
+      },
     },
   },
   plugins: [],

@@ -46,7 +46,7 @@ export function SuggestionChips() {
 
   return (
     <div
-      className="grid grid-cols-3 gap-2 mt-[31px] transition-opacity duration-300"
+      className="grid grid-cols-3 gap-2 mt-[110px] transition-opacity duration-300"
       style={{ opacity: visible ? 1 : 0 }}
     >
       {chips.map((chip) => (
@@ -54,7 +54,7 @@ export function SuggestionChips() {
           key={chip}
           onClick={() => !isLoading && send(chip)}
           disabled={isLoading}
-          className="text-xs px-3 py-2 rounded-xl border border-james-border bg-white text-james-muted hover:border-james-primary/40 hover:text-james-primary hover:bg-james-primary/5 transition-all disabled:opacity-40 disabled:cursor-not-allowed text-left leading-snug shadow-sm"
+          className="text-xs px-3 py-2 rounded-xl border border-white/30 bg-white/20 backdrop-blur-md text-white hover:bg-white/30 hover:border-white/50 transition-all disabled:opacity-40 disabled:cursor-not-allowed text-left leading-snug shadow-sm"
         >
           {chip}
         </button>
