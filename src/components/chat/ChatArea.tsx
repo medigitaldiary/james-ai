@@ -26,7 +26,7 @@ export function ChatArea() {
         ) : (
           <>
             <MessageList />
-            <div className="bg-white border-t border-james-border">
+            <div>
               <InputBar />
             </div>
           </>

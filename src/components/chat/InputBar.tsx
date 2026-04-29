@@ -34,7 +34,7 @@ export function InputBar() {
   const isWelcome = messages.length === 0
 
   return (
-    <div className={`w-full ${isWelcome ? 'px-4' : 'bg-white/10 backdrop-blur-md px-4 py-3'}`}>
+    <div className={`w-full ${isWelcome ? 'px-4' : 'px-4 py-3'}`}>
       <div className="max-w-2xl mx-auto">
         {/* Input box */}
         <div className="flex items-center gap-2 px-4 py-3 bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl shadow-sm focus-within:border-white/60 focus-within:shadow-md transition-all">
@@ -61,11 +61,11 @@ export function InputBar() {
         {/* Footer */}
         <p className="text-center text-xs text-white/70 mt-3">
           By messaging James AI, you agree to our{' '}
-          <a href="https://bondscanner.com" className="underline underline-offset-2 hover:text-james-text">
+          <a href="https://bondscanner.com" className="underline underline-offset-2 hover:text-white">
             Terms & Conditions
           </a>{' '}
           and have read our{' '}
-          <a href="https://bondscanner.com" className="underline underline-offset-2 hover:text-james-text">
+          <a href="https://bondscanner.com" className="underline underline-offset-2 hover:text-white">
             Privacy Policy
           </a>
           .
