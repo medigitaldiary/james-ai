@@ -1,40 +1,97 @@
 from __future__ import annotations
 """
-Keystone Bonds API service.
+BondScanner Pulse API service.
 Fetches live bond listings and applies filters based on user queries.
 Caches the response in-memory to avoid hammering the upstream API.
 """
 import logging
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 import httpx
 
 logger = logging.getLogger(__name__)
 
-KEYSTONE_URL = "https://keystone.sustvest.in/api/bonds/live"
+PULSE_URL = "https://pulse.bondscanner.com/v1/issuer/ipc"
+PULSE_HEADERS = {
+    "x-app-id": "BOND_SCANNER_WEB",
+    "x-platform-request": "WEB",
+    "x-device-type": "DEVICE_TYPE_WEBAPP",
+    "x-client-type": "TABLET_WEB",
+    "x-device-id": "550e8400-e29b-41d4-a716-446655440000",
+}
+PULSE_PARAMS = {
+    "size": 200,
+    "bond_type": "ALL_BONDS",
+}
+
 CACHE_TTL_SECONDS = 900  # 15 minutes
 
 _cache: dict = {"data": None, "fetched_at": 0.0}
 
 
+# ── Normalise raw Pulse bond → internal format ────────────────────────────────
+
+def _map_state(state: str) -> str:
+    """Map Pulse API state to our internal inventory_status."""
+    s = state.upper()
+    if s == "SOLD_OUT":
+        return "SOLD_OUT"
+    if s in ("LIVE", "COMING_SOON"):
+        return "AVAILABLE"
+    return "AVAILABLE"
+
+
+def _days_since(iso_str: str) -> int:
+    """Return whole days between an ISO timestamp and now."""
+    if not iso_str:
+        return 9999
+    try:
+        dt = datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
+        delta = datetime.now(timezone.utc) - dt
+        return max(0, delta.days)
+    except Exception:
+        return 9999
+
+
+def _normalize_bond(raw: dict) -> dict:
+    """Convert a raw Pulse API bond record to our internal field schema."""
+    yield_val = raw.get("yield", "")
+    return {
+        "isin":                     raw.get("isin", ""),
+        "deal_id":                  raw.get("id", ""),
+        "registered_name":          (raw.get("issuerName") or "").strip(),
+        "yield_pct":                str(yield_val) if yield_val != "" else "—",
+        "coupon_rate":              "",        # not in listing; available via detail endpoint
+        "credit_rating":            raw.get("ratings", ""),
+        "rating_agency":            "",        # not in listing; available via detail endpoint
+        "maturity_date":            raw.get("maturityDate", ""),
+        "interest_payout_frequency": raw.get("payoutFrequency", ""),
+        "inventory_status":         _map_state(raw.get("state", "")),
+        "face_value_cr":            str(raw.get("minInvestmentAmount", "")),
+        "days_since_isin_live":     _days_since(raw.get("createdAt", "")),
+    }
+
+
 # ── Fetch & cache ─────────────────────────────────────────────────────────────
 
 async def _fetch_bonds() -> list[dict]:
-    """Fetch live bonds from Keystone, with in-memory cache."""
+    """Fetch live bonds from BondScanner Pulse API, with in-memory cache."""
     now = time.time()
     if _cache["data"] and (now - _cache["fetched_at"]) < CACHE_TTL_SECONDS:
         logger.info("📦 Bonds API — serving from cache (%ds old)", int(now - _cache["fetched_at"]))
         return _cache["data"]
 
-    logger.info("🌐 Bonds API — fetching from Keystone...")
+    logger.info("🌐 Bonds API — fetching from Pulse API...")
     async with httpx.AsyncClient(timeout=15) as client:
-        resp = await client.get(KEYSTONE_URL)
+        resp = await client.get(PULSE_URL, headers=PULSE_HEADERS, params=PULSE_PARAMS)
         resp.raise_for_status()
         payload = resp.json()
 
-    bonds = payload.get("data", [])
+    raw_bonds = payload.get("data", {}).get("data", [])
+    bonds = [_normalize_bond(b) for b in raw_bonds]
+
     _cache["data"] = bonds
     _cache["fetched_at"] = now
     logger.info("✅ Bonds API — fetched %d bonds, cached for %ds", len(bonds), CACHE_TTL_SECONDS)
@@ -54,7 +111,7 @@ _STATUS_ORDER = {"AVAILABLE": 0, "PARTIALLY_SOLD": 1}
 
 
 def _sort_by_availability(bonds: list[dict]) -> list[dict]:
-    """Sort bonds: AVAILABLE first, PARTIALLY_SOLD second. SOLD_OUT excluded entirely."""
+    """Sort bonds: AVAILABLE first. SOLD_OUT excluded entirely."""
     filtered = [b for b in bonds if b.get("inventory_status", "").upper() != "SOLD_OUT"]
     return sorted(filtered, key=lambda b: _STATUS_ORDER.get(b.get("inventory_status", "").upper(), 99))
 
@@ -82,8 +139,7 @@ def filter_bonds(bonds: list[dict], intent: str, query: str) -> list[dict]:
 
     elif intent == "new_bonds":
         days = _extract_number(query, default=7.0)
-        result = [b for b in result if int(b.get("days_since_isin_live", 9999)) <= int(days)]
-        # Sort newest first
+        result = [b for b in result if b.get("days_since_isin_live", 9999) <= int(days)]
         result.sort(key=lambda b: b.get("days_since_isin_live", 9999))
         logger.info("🔍 new_bonds: last %d days → %d bonds", int(days), len(result))
 
@@ -119,7 +175,10 @@ def filter_bonds(bonds: list[dict], intent: str, query: str) -> list[dict]:
 
     # For list_all: within each availability bucket, sort by yield descending
     if intent == "list_all":
-        result.sort(key=lambda b: (_STATUS_ORDER.get(b.get("inventory_status", "").upper(), 99), -_safe_float(b.get("yield_pct"))))
+        result.sort(key=lambda b: (
+            _STATUS_ORDER.get(b.get("inventory_status", "").upper(), 99),
+            -_safe_float(b.get("yield_pct")),
+        ))
 
     return result
 
@@ -141,27 +200,24 @@ def format_bonds_for_llm(bonds: list[dict], max_bonds: int = 15) -> str:
     ]
 
     for i, b in enumerate(shown, 1):
-        name = b.get("registered_name", "Unknown").strip()
-        isin = b.get("isin", "N/A")
-        yield_pct = b.get("yield_pct", "N/A")
-        coupon = b.get("coupon_rate", "N/A")
-        rating = b.get("credit_rating", "N/A")
-        agency = b.get("rating_agency", "")
+        name     = b.get("registered_name", "Unknown").strip()
+        isin     = b.get("isin", "N/A")
+        deal_id  = b.get("deal_id", "")
+        yld      = b.get("yield_pct", "N/A")
+        rating   = b.get("credit_rating", "N/A")
         maturity = b.get("maturity_date", "N/A")
-        months = b.get("months_to_maturity", "N/A")
-        payout = b.get("interest_payout_frequency", "N/A")
-        status = b.get("inventory_status", "N/A").replace("_", " ").title()
-        days_live = b.get("days_since_isin_live", "N/A")
+        payout   = b.get("interest_payout_frequency", "N/A")
         face_val = b.get("face_value_cr", "N/A")
 
+        url_suffix = f"?id={deal_id}" if deal_id else ""
         lines.append(
             f"\n{i}. {name}\n"
             f"   ISIN: {isin}\n"
-            f"   Yield (YTM): {yield_pct}%  |  Coupon: {coupon}%\n"
-            f"   Credit Rating: {rating} ({agency})\n"
-            f"   Maturity: {maturity} ({months} months away)\n"
-            f"   Payout: {payout}  |  Face Value: ₹{face_val}\n"
-            f"   Status: {status}  |  Live since: {days_live} day(s) ago"
+            f"   Yield (YTM): {yld}%\n"
+            f"   Credit Rating: {rating}\n"
+            f"   Maturity: {maturity}\n"
+            f"   Payout: {payout}  |  Min. Investment: ₹{face_val}\n"
+            f"   URL: https://bondscanner.com/deal-details/{isin}{url_suffix}"
         )
 
     if total > max_bonds:
@@ -170,26 +226,29 @@ def format_bonds_for_llm(bonds: list[dict], max_bonds: int = 15) -> str:
     return "\n".join(lines)
 
 
-# ── Main entry point ──────────────────────────────────────────────────────────
+# ── Frontend serialisation ────────────────────────────────────────────────────
 
 def to_frontend_entries(bonds: list[dict]) -> list[dict]:
-    """Convert raw API bonds to clean frontend-friendly dicts."""
+    """Convert normalised bonds to clean frontend-friendly dicts."""
     return [
         {
-            "isin": b.get("isin", ""),
-            "registered_name": b.get("registered_name", "").strip(),
-            "face_value": b.get("face_value_cr", "0"),
-            "yield_pct": b.get("yield_pct", "—"),
-            "coupon_rate": b.get("coupon_rate", ""),
-            "maturity_date": b.get("maturity_date", ""),
-            "inventory_status": b.get("inventory_status", ""),
+            "isin":                      b.get("isin", ""),
+            "deal_id":                   b.get("deal_id", ""),
+            "registered_name":           b.get("registered_name", "").strip(),
+            "face_value":                b.get("face_value_cr", "0"),
+            "yield_pct":                 b.get("yield_pct", "—"),
+            "coupon_rate":               b.get("coupon_rate", ""),
+            "maturity_date":             b.get("maturity_date", ""),
+            "inventory_status":          b.get("inventory_status", ""),
             "interest_payout_frequency": b.get("interest_payout_frequency", ""),
-            "credit_rating": b.get("credit_rating", ""),
-            "rating_agency": b.get("rating_agency", ""),
+            "credit_rating":             b.get("credit_rating", ""),
+            "rating_agency":             b.get("rating_agency", ""),
         }
         for b in bonds
     ]
 
+
+# ── Main entry point ──────────────────────────────────────────────────────────
 
 async def get_bonds_context(intent: str, query: str) -> tuple[str, list[dict]]:
     """
@@ -204,7 +263,7 @@ async def get_bonds_context(intent: str, query: str) -> tuple[str, list[dict]]:
         entries = to_frontend_entries(filtered[:15])
         return context, entries
     except Exception as e:
-        logger.error("Bonds API error: %s", e)
+        logger.error("⛔ Bonds API error: %s", e)
         fallback = "I wasn't able to fetch live bond data right now. Please visit bondscanner.com for the latest listings."
         return fallback, []
 

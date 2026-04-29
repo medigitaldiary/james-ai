@@ -97,7 +97,7 @@ export function BondsTable({ bonds }: Props) {
               {/* CTA */}
               <td className="px-3 py-2.5">
                 <a
-                  href={`https://bondscanner.com/deal-details/${bond.isin}`}
+                  href={`https://bondscanner.com/deal-details/${bond.isin}${bond.deal_id ? `?id=${bond.deal_id}` : ''}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 bg-james-primary hover:bg-james-primaryHover text-white text-[10px] font-semibold px-2.5 py-1.5 rounded-lg transition-colors whitespace-nowrap"

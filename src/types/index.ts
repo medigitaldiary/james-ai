@@ -2,6 +2,7 @@ export type MessageRole = 'user' | 'james'
 
 export interface BondEntry {
   isin: string
+  deal_id: string
   registered_name: string
   face_value: string
   yield_pct: string
