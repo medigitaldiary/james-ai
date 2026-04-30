@@ -28,23 +28,14 @@ export function BondsTable({ bonds }: Props) {
       <table className="min-w-full text-xs border-collapse">
         <thead>
           <tr className="bg-white/20 border-b border-white/20">
-            {[
-              'ISIN',
-              'Issuer Name',
-              'Credit Rating',
-              'Face Value',
-              'Yield (YTM)',
-              'Coupon',
-              'Maturity Date',
-              'Details',
-            ].map((col) => (
-              <th
-                key={col}
-                className="px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90 first:rounded-tl-xl last:rounded-tr-xl"
-              >
-                {col}
-              </th>
-            ))}
+            <th className="px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90 rounded-tl-xl">Issuer</th>
+            <th className="px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90">Rating</th>
+            <th className="px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90">Yield</th>
+            <th className="hidden sm:table-cell px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90">ISIN</th>
+            <th className="hidden sm:table-cell px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90">Face Value</th>
+            <th className="hidden md:table-cell px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90">Coupon</th>
+            <th className="hidden md:table-cell px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90">Maturity</th>
+            <th className="px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90 rounded-tr-xl">Details</th>
           </tr>
         </thead>
         <tbody>
@@ -55,46 +46,46 @@ export function BondsTable({ bonds }: Props) {
                 i % 2 === 0 ? 'bg-transparent' : 'bg-white/5'
               }`}
             >
-              {/* ISIN */}
-              <td className="px-3 py-2.5 font-mono text-[11px] text-blue-200 font-medium whitespace-nowrap">
-                {bond.isin}
+              {/* Issuer Name — always visible */}
+              <td className="px-3 py-2.5 text-white font-medium max-w-[120px] sm:max-w-[160px]">
+                <span className="line-clamp-2 leading-tight text-[11px]">{bond.registered_name.trim()}</span>
               </td>
 
-              {/* Issuer Name */}
-              <td className="px-3 py-2.5 text-white font-medium max-w-[160px]">
-                <span className="line-clamp-2 leading-tight">{bond.registered_name.trim()}</span>
-              </td>
-
-              {/* Credit Rating */}
+              {/* Credit Rating — always visible */}
               <td className="px-3 py-2.5 whitespace-nowrap">
                 <span className="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full border border-white/30 bg-white/15 text-white">
                   {bond.credit_rating}
                 </span>
-                <span className="block text-[10px] text-white/50 mt-0.5">{bond.rating_agency}</span>
+                <span className="hidden sm:block text-[10px] text-white/50 mt-0.5">{bond.rating_agency}</span>
               </td>
 
-              {/* Face Value */}
-              <td className="px-3 py-2.5 text-white/80 whitespace-nowrap">
+              {/* Yield — always visible */}
+              <td className="px-3 py-2.5 whitespace-nowrap">
+                <span className="font-bold text-emerald-300 text-[11px]">{bond.yield_pct}%</span>
+              </td>
+
+              {/* ISIN — hidden on mobile */}
+              <td className="hidden sm:table-cell px-3 py-2.5 font-mono text-[11px] text-blue-200 font-medium whitespace-nowrap">
+                {bond.isin}
+              </td>
+
+              {/* Face Value — hidden on mobile */}
+              <td className="hidden sm:table-cell px-3 py-2.5 text-white/80 whitespace-nowrap text-[11px]">
                 {formatCurrency(bond.face_value)}
               </td>
 
-              {/* Yield */}
-              <td className="px-3 py-2.5 whitespace-nowrap">
-                <span className="font-bold text-emerald-300">{bond.yield_pct}%</span>
-              </td>
-
-              {/* Coupon */}
-              <td className="px-3 py-2.5 text-white/80 whitespace-nowrap">
+              {/* Coupon — hidden on mobile + tablet */}
+              <td className="hidden md:table-cell px-3 py-2.5 text-white/80 whitespace-nowrap text-[11px]">
                 {bond.coupon_rate ? `${bond.coupon_rate}%` : '—'}
                 <span className="block text-[10px] text-white/50">{bond.interest_payout_frequency}</span>
               </td>
 
-              {/* Maturity Date */}
-              <td className="px-3 py-2.5 text-white/80 whitespace-nowrap">
+              {/* Maturity — hidden on mobile + tablet */}
+              <td className="hidden md:table-cell px-3 py-2.5 text-white/80 whitespace-nowrap text-[11px]">
                 {formatDate(bond.maturity_date)}
               </td>
 
-              {/* CTA */}
+              {/* CTA — always visible */}
               <td className="px-3 py-2.5">
                 <a
                   href={`https://bondscanner.com/deal-details/${bond.isin}${bond.deal_id ? `?id=${bond.deal_id}` : ''}`}

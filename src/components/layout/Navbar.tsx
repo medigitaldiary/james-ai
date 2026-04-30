@@ -7,22 +7,22 @@ export function Navbar() {
   const hasConversation = messages.length > 0
 
   return (
-    <nav className="w-full px-6 py-3 flex items-center justify-between shrink-0">
+    <nav className="w-full px-4 sm:px-6 py-3 flex items-center justify-between shrink-0">
       {/* Logo */}
       <a href="https://bondscanner.com">
-        <img src="/bondscanner-logo.png" alt="BondScanner" className="h-8" />
+        <img src="/bondscanner-logo.png" alt="BondScanner" className="h-6 sm:h-8" />
       </a>
 
       {/* Right side actions */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         {/* Share conversation — only when chat has started */}
         {hasConversation && (
           <button
             onClick={() => shareConversation(messages)}
-            className="flex items-center gap-1.5 text-sm font-medium text-james-muted hover:text-james-primary border border-james-border hover:border-james-primary/40 px-3 py-2 rounded-lg transition-all"
+            className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-white/70 hover:text-white border border-white/30 hover:border-white/60 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-all"
           >
-            <Share2 size={14} />
-            Share
+            <Share2 size={13} />
+            <span className="hidden sm:inline">Share</span>
           </button>
         )}
 
@@ -31,7 +31,7 @@ export function Navbar() {
           href="https://bondscanner.com/?login=phone"
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-james-primary hover:bg-james-primaryHover text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          className="bg-james-primary hover:bg-james-primaryHover text-white text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors"
         >
           Sign up
         </a>

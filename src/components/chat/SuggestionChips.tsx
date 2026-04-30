@@ -18,7 +18,7 @@ const SUGGESTIONS = [
 ]
 
 const VISIBLE_COUNT = 6
-const ROTATE_INTERVAL = 5000
+const ROTATE_INTERVAL = 8000
 
 export function SuggestionChips() {
   const messages = useChatStore((s) => s.messages)
@@ -45,18 +45,20 @@ export function SuggestionChips() {
   )
 
   return (
-    <div
-      className="grid grid-cols-3 gap-2 mt-[110px] transition-opacity duration-300"
-      style={{ opacity: visible ? 1 : 0 }}
-    >
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-[80px] sm:mt-[110px]">
       {chips.map((chip) => (
         <button
           key={chip}
           onClick={() => !isLoading && send(chip)}
           disabled={isLoading}
-          className="text-xs px-3 py-2 rounded-xl border border-white/30 bg-white/20 backdrop-blur-md text-white hover:bg-white/30 hover:border-white/50 transition-all disabled:opacity-40 disabled:cursor-not-allowed text-left leading-snug shadow-sm"
+          className="text-xs px-3 py-2 rounded-xl border border-white/30 bg-white/20 backdrop-blur-md text-white hover:bg-white/30 hover:border-white/50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-left leading-snug shadow-sm"
         >
-          {chip}
+          <span
+            className="transition-opacity duration-300"
+            style={{ opacity: visible ? 1 : 0 }}
+          >
+            {chip}
+          </span>
         </button>
       ))}
     </div>

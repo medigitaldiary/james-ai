@@ -7,7 +7,7 @@ export function WelcomeBanner() {
       </div>
 
       {/* Heading */}
-      <h1 className="text-white font-semibold text-3xl leading-tight max-w-md">
+      <h1 className="text-white font-semibold text-xl sm:text-3xl leading-tight max-w-md">
         Hey, how may I assist you today?
       </h1>
     </div>

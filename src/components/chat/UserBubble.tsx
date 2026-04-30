@@ -4,7 +4,7 @@ import { formatTime } from '../../utils/formatTime'
 export function UserBubble({ message }: { message: Message }) {
   return (
     <div className="flex justify-end">
-      <div className="max-w-[65%] space-y-1">
+      <div className="max-w-[85%] sm:max-w-[65%] space-y-1">
         <div className="bg-white/30 backdrop-blur-md border border-white/40 text-white rounded-2xl rounded-br-sm px-4 py-3 text-sm leading-relaxed">
           {message.content}
         </div>
