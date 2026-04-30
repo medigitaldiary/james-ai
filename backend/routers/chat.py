@@ -216,12 +216,30 @@ LIVE_BOND_INTENTS: list[tuple[str, list[str]]] = [
 ]
 
 
-def detect_live_bond_intent(text: str) -> str | None:
+async def detect_live_bond_intent(text: str) -> str | None:
     """Return bond API filter intent if query is about live bond listings."""
+    # 1. Check static regex patterns first
     for intent, patterns in LIVE_BOND_INTENTS:
         for pat in patterns:
             if re.search(pat, text, re.IGNORECASE):
                 return intent
+
+    # 2. Dynamic issuer name match — check query against all live bond names
+    # This ensures any issuer on BondScanner is automatically recognised
+    # without needing to hardcode company names in the regex list above.
+    try:
+        from services.bonds_api import _fetch_bonds
+        bonds = await _fetch_bonds()
+        text_lower = text.lower()
+        for bond in bonds:
+            name = bond.get("registered_name", "")
+            # Match if at least one significant word (4+ chars) from issuer name appears in query
+            words = [w for w in name.lower().split() if len(w) >= 4 and w not in {"bond", "bonds", "finance", "capital", "limited", "india"}]
+            if any(w in text_lower for w in words):
+                return "bond_detail"
+    except Exception:
+        pass
+
     return None
 
 
@@ -305,7 +323,7 @@ async def chat(req: ChatRequest):
         return ChatResponse(content=content, show_disclaimer=False)
 
     # 2. Check if this is a live bond data query → fetch from Keystone API
-    live_bond_intent = detect_live_bond_intent(normalized_msg)
+    live_bond_intent = await detect_live_bond_intent(normalized_msg)
     if live_bond_intent:
         logger.info("📊 Live bond query [%s] | query: %r", live_bond_intent, last_user_msg[:80])
         # Pass normalized query to filter functions; LLM gets original text
