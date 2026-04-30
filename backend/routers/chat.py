@@ -169,6 +169,8 @@ LIVE_BOND_INTENTS: list[tuple[str, list[str]]] = [
         r"\bINE[A-Z0-9]{8,12}\b",                                          # bare ISIN in message
         r"(tell me (more )?about|details? (of|about|for)|info (on|about)|"
         r"more (about|on)|explain|describe|what (is|are))\s+.{3,50}(bond|ncd|debenture)",
+        r"(when (is|will|are)|is).{2,40}(going live|available|listed|live|coming)",  # "when is X going live?"
+        r"(is|are).{2,40}(bond|ncd).{0,20}(available|live|listed)",        # "is X bond available?"
         r"(shriram|hdfc|tata|bajaj|iifl|piramal|muthoot|manappuram|"
         r"aditya birla|kotak|l&t|indiabulls|incred|ugro|protium|"
         r"akara|tapir|vedika|vivriti|lendingkart|"
@@ -332,8 +334,17 @@ async def chat(req: ChatRequest):
         # ── Bond detail: single bond → clean text card, no table ─────────────
         if live_bond_intent == "bond_detail":
             if not bonds_data:
-                # Bond not found — let LLM handle gracefully via RAG fallback
-                logger.info("⚠️ bond_detail — no match found, falling through to RAG")
+                # Bond not found in live data — tell user explicitly instead of RAG guessing
+                logger.info("⚠️ bond_detail — no match found, returning not-listed response")
+                return ChatResponse(
+                    content=(
+                        "This bond is not currently listed on BondScanner. "
+                        "New bonds are added regularly — check bondscanner.com for the latest listings "
+                        "or contact support@bondscanner.com to ask about upcoming issues."
+                    ),
+                    show_disclaimer=False,
+                    bonds_data=None,
+                )
             else:
                 intent_hint = (
                     "The user is asking about a specific bond. "
