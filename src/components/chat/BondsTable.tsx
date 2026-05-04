@@ -32,8 +32,7 @@ export function BondsTable({ bonds }: Props) {
             <th className="px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90">Rating</th>
             <th className="px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90">Yield</th>
             <th className="hidden sm:table-cell px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90">ISIN</th>
-            <th className="hidden sm:table-cell px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90">Face Value</th>
-            <th className="hidden md:table-cell px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90">Coupon</th>
+            <th className="hidden sm:table-cell px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90">Min. Investment</th>
             <th className="hidden md:table-cell px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90">Maturity</th>
             <th className="px-3 py-2.5 text-left font-semibold whitespace-nowrap text-[11px] tracking-wide text-white/90 rounded-tr-xl">Details</th>
           </tr>
@@ -69,15 +68,9 @@ export function BondsTable({ bonds }: Props) {
                 {bond.isin}
               </td>
 
-              {/* Face Value — hidden on mobile */}
+              {/* Min. Investment — hidden on mobile */}
               <td className="hidden sm:table-cell px-3 py-2.5 text-white/80 whitespace-nowrap text-[11px]">
                 {formatCurrency(bond.face_value)}
-              </td>
-
-              {/* Coupon — hidden on mobile + tablet */}
-              <td className="hidden md:table-cell px-3 py-2.5 text-white/80 whitespace-nowrap text-[11px]">
-                {bond.coupon_rate ? `${bond.coupon_rate}%` : '—'}
-                <span className="block text-[10px] text-white/50">{bond.interest_payout_frequency}</span>
               </td>
 
               {/* Maturity — hidden on mobile + tablet */}
