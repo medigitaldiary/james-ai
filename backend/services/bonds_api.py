@@ -285,7 +285,7 @@ def _extract_year(text: str) -> int | None:
 def _extract_rating(text: str) -> str | None:
     """
     Extract a credit-rating symbol from (pre-normalized) text.
-    Uses (?<!\w) / (?!\w) boundaries instead of \b so that symbols ending
+    Uses (?<!\\w) / (?!\\w) boundaries instead of \\b so that symbols ending
     with '+' or '-' (non-word chars) are matched correctly.
     Order: longest / most-specific first.
     """
