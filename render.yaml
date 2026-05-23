@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: james-ai
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: CLAUDE_MODEL
+        value: claude-sonnet-4-5
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_EMBEDDING_MODEL
+        value: models/gemini-embedding-001
+      - key: DATABASE_URL
+        sync: false
+      - key: ENVIRONMENT
+        value: production
+      - key: CORS_ORIGINS
+        sync: false
+      - key: SCRAPE_URLS
+        value: https://bondscanner.com,https://bondscanner.com/learn,https://bondscanner.com/faq
+      - key: SCRAPE_CRON_HOUR
+        value: "2"
+      - key: SCRAPE_CRON_MINUTE
+        value: "0"
